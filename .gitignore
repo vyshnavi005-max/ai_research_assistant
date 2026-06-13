@@ -1,0 +1,25 @@
+# Environments
+.env
+venv/
+env/
+.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+
+# Project specific
+backend/chroma_db/
+backend/data/
+*.pdf
+scratch/
+
+# Gemini AI IDE
+.gemini/
