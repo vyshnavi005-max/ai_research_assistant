@@ -16,6 +16,7 @@ CHROMA_PATH = "chroma_db"
 
 def index_data():
     """Indexes the PDFs in the data directory using modular classes."""
+    print(f"Scanning for PDFs in '{DATA_DIR}'...")
     loader = DocumentLoader()
     documents = loader.load_directory(DATA_DIR)
     
@@ -23,9 +24,13 @@ def index_data():
         print("No documents found to index.")
         return
     
+    print(f"Loaded {len(documents)} document pages. Splitting into chunks...")
     chunks = loader.split_documents(documents)
     
+    print(f"Created {len(chunks)} chunks. Initializing embedding model and Vector Store...")
     vector_store = VectorStore(persist_directory=CHROMA_PATH)
+    
+    print("Embedding chunks and saving to ChromaDB (this might take a while)...")
     vector_store.add_documents(chunks)
     print("Indexing complete.")
 
@@ -36,7 +41,7 @@ def query_rag(question):
         return
         
     vector_store = VectorStore(persist_directory=CHROMA_PATH)
-    retriever_logic = Retriever(vector_store, k=3)
+    retriever_logic = Retriever(vector_store)
     retriever = retriever_logic.get_retriever_interface()
     
     generator = LLMGenerator()
@@ -48,7 +53,13 @@ def query_rag(question):
     
     print("\nAnswer:")
     print("-" * 40)
-    print(response)
+    print(response["answer"])
+    print("-" * 40)
+    
+    if response["citations"]:
+        print("\nCitations:")
+        for citation in response["citations"]:
+            print(f"[{citation['id']}] {citation['source']} (Page {citation['page']})")
     print("-" * 40)
 
 if __name__ == "__main__":

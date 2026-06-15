@@ -1,5 +1,6 @@
 import os
 import logging
+import hashlib
 from typing import List
 # pyrefly: ignore [missing-import]
 from langchain_core.documents import Document
@@ -44,7 +45,16 @@ class DocumentLoader:
             
         logger.info(f"Loading PDF: {file_path}")
         loader = PyMuPDFLoader(file_path)
-        return loader.load()
+        docs = loader.load()
+        
+        filename = os.path.basename(file_path)
+        document_id = hashlib.md5(filename.encode()).hexdigest()[:8]
+        
+        for doc in docs:
+            doc.metadata["source"] = filename
+            doc.metadata["document_id"] = document_id
+            
+        return docs
 
     def load_directory(self, directory_path: str) -> List[Document]:
         """

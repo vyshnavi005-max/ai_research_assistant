@@ -7,7 +7,7 @@ from app.rag.vector_store import VectorStore
 logger = logging.getLogger(__name__)
 
 class Retriever:
-    def __init__(self, vector_store: VectorStore, k: int = 3):
+    def __init__(self, vector_store: VectorStore, k: int = 5):
         """
         Initializes the Retriever.
         
@@ -25,7 +25,13 @@ class Retriever:
         """
         if self._retriever is None:
             vs = self.vector_store.get_vectorstore()
-            self._retriever = vs.as_retriever(search_kwargs={"k": self.k})
+            self._retriever = vs.as_retriever(
+                search_type="mmr",
+                search_kwargs={
+                    "k": self.k,
+                    "fetch_k": 20
+                }
+            )
         return self._retriever
 
     def retrieve(self, query: str) -> List[Document]:

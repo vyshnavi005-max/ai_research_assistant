@@ -26,3 +26,7 @@ scratch/
 implementation_plan.md
 task.md
 walkthrough.md
+
+# Evaluation
+backend/run_evaluation.py
+backend/evaluation_dataset.json
